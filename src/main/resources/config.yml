@@ -1,0 +1,9 @@
+language: "cs_cz"
+prefix: "&6[Mail]"
+storage:
+  method: "mysql"
+  data:
+    address: localhost
+    database: demo
+    username: demo
+    password: ''

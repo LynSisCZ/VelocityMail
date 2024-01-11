@@ -1,0 +1,7 @@
+playerNotFound: "Hráč nenalezen"
+mailSent: "Mail hrači <receivername> úspěšně odeslán"
+mailHelp: "/mail view, /mail all, /mail <playername> <message>"
+mailInfo: "Máš nový mail podívej se přes /mail view"
+mailEmpty: "Žádný nový mail"
+mailView: "Nepřečtěné zprávy:"
+mail: "Od:<sendername> Zpráva: <message>"
