@@ -1,0 +1,8 @@
+stages:
+  - build
+
+java-build:
+  image: maven:3.8-openjdk-17
+  stage: build
+  script:
+    - mvn package -DskipTests=true
