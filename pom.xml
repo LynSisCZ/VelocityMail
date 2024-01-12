@@ -19,8 +19,13 @@
     <build>
         <resources>
             <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
+                <directory>${project.basedir}/src/main/resources/</directory>
                 <filtering>true</filtering>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${project.basedir}/src/main/resources/languages/</directory>
             </resource>
         </resources>
         <plugins>

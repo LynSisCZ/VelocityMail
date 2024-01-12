@@ -75,4 +75,10 @@ public class MessageManager {
                 MessageManager.prefix + "<reset> " + MessageManager.messages.getNode("mailInfo").getString()
         ));
     }
+
+    public static void mailReload(CommandSource p) {
+        p.sendMessage(MiniMessage.miniMessage().deserialize(
+                MessageManager.prefix + "<reset> VelocityMail reloaded"
+        ));
+    }
 }

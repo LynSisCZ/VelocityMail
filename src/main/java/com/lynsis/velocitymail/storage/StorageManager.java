@@ -13,19 +13,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StorageManager {
-    private final Storage storage;
+    private Storage storage;
     private final VelocityMail velocityMail;
     private HashMap<String, String> players = new HashMap<String, String>();
 
 
     public StorageManager(VelocityMail velocityMail) {
         this.velocityMail = velocityMail;
+        this.load();
+    }
+    public void load(){
         String method = ConfigManager.config.getNode("storage", "method").getString();
         if (method.equalsIgnoreCase("mysql")) {
             this.storage = new StorageMysql(velocityMail);
         } else {
             this.storage = new StorageYaml(velocityMail);
         }
+    }
+    public void unload(){
+        this.storage.disconnect();
+        this.storage = null;
     }
 
     public Storage getStorage() {

@@ -25,4 +25,6 @@ public abstract class Storage {
     public abstract void connect();
 
     public abstract void setView(String playerUuid);
+
+    public abstract void disconnect();
 }
