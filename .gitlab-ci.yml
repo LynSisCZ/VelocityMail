@@ -6,6 +6,6 @@ java-build:
   stage: build
   artifacts:
       paths:
-          - target/*.jar
+          - target/VelocityMail-*.jar
   script:
     - mvn package -DskipTests=true
