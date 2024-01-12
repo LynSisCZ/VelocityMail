@@ -1,8 +1,11 @@
 stages:
   - build
-
+  
 java-build:
   image: maven:latest
   stage: build
+  artifacts:
+      paths:
+          - target/*.jar
   script:
     - mvn package -DskipTests=true
