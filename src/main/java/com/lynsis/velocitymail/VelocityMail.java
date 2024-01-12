@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "velocitymail",
         name = "VelocityMail",
-        version = "1.0-SNAPSHOT",
+//        version = "1.1-Beta",
         authors = {"LynSisCZ"}
 )
 public class VelocityMail {

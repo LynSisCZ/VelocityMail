@@ -8,6 +8,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,7 +53,8 @@ public class MessageManager {
                 MessageManager.prefix + "<reset> " + MessageManager.messages.getNode("mail").getString(),
                 Placeholder.unparsed("sendername", senderName),
                 Placeholder.unparsed("message", message.message),
-                Placeholder.styling("mailplayer", ClickEvent.suggestCommand("/mail " + senderName + " "))
+                Placeholder.styling("mailplayer", ClickEvent.suggestCommand("/mail " + senderName + " ")),
+                Formatter.date("date", message.dateTime)
         ));
     }
 
