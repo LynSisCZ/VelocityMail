@@ -5,10 +5,7 @@ import com.lynsis.velocitymail.config.ConfigManager;
 import com.velocitypowered.api.proxy.Player;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,6 +15,8 @@ public class StorageMysql extends Storage {
     private HikariDataSource dataSource;
     
     public StorageMysql(VelocityMail velocityMail){
+        this.velocityMail = velocityMail;
+
         this.dataSource = new HikariDataSource();
         this.dataSource.setDriverClassName("org.mariadb.jdbc.Driver");
         this.dataSource.setJdbcUrl("jdbc:mariadb://" + ConfigManager.config.getNode("storage", "data", "address").getString() + ":3306/" + ConfigManager.config.getNode("storage", "data", "database").getString());
@@ -26,7 +25,7 @@ public class StorageMysql extends Storage {
         this.dataSource.setAutoCommit(true);
 
         this.connect();
-        this.checkDatabase();
+        this.createDatabase();
     }
 
     @Override
@@ -42,11 +41,11 @@ public class StorageMysql extends Storage {
             ResultSet rs = query.executeQuery();
             ArrayList<Message> messages = new ArrayList<>();
             while (rs.next()) {
-                messages.add(new Message(rs.getString("sender_uuid"), rs.getString("receiver_uuid"), rs.getString("message")));
+                messages.add(new Message(rs.getString("sender_uuid"), rs.getString("receiver_uuid"), rs.getString("message"), rs.getTimestamp("timestamp").toLocalDateTime()));
             }
             return messages;
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
         return null;
     }
@@ -58,13 +57,14 @@ public class StorageMysql extends Storage {
 
     public void saveMessage(Message message) {
         try {
-            PreparedStatement query = this.connection.prepareStatement("INSERT INTO velocitymail (sender_uuid, receiver_uuid, message ) VALUES (?,?,?)");
+            PreparedStatement query = this.connection.prepareStatement("INSERT INTO velocitymail (sender_uuid, receiver_uuid, message, timestamp) VALUES (?,?,?,?)");
             query.setString(1, message.senderUuid);
             query.setString(2, message.receiverUuid);
             query.setString(3, message.message);
+            query.setTimestamp(4, Timestamp.valueOf(message.dateTime));
             query.execute();
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
     }
 
@@ -76,7 +76,7 @@ public class StorageMysql extends Storage {
 
             query.execute();
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
     }
 
@@ -90,7 +90,7 @@ public class StorageMysql extends Storage {
             }
             return players;
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
         return null;
     }
@@ -108,7 +108,7 @@ public class StorageMysql extends Storage {
                 messagesCount = rs.getInt(1);
             }
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
         return messagesCount;
     }
@@ -118,7 +118,7 @@ public class StorageMysql extends Storage {
         try {
             return this.connection.isValid(10);
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
         return false;
     }
@@ -128,7 +128,7 @@ public class StorageMysql extends Storage {
         try {
             this.connection = this.dataSource.getConnection();
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
             this.velocityMail.unRegisterCommand();
         }
     }
@@ -140,22 +140,22 @@ public class StorageMysql extends Storage {
             query.setString(1, playerUuid);
             query.execute();
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
     }
 
-    public void checkDatabase() {
+    public void createDatabase() {
         try {
-            PreparedStatement sqlMail = this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS velocitymail (id INT NOT NULL AUTO_INCREMENT, sender_uuid VARCHAR(255) NOT NULL, receiver_uuid VARCHAR(255) NOT NULL, message TEXT NOT NULL, viewed tinyint(1) NOT NULL DEFAULT 0, PRIMARY KEY (id)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_bin;");
-            sqlMail.execute();
+            this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS velocitymail (id INT NOT NULL AUTO_INCREMENT, sender_uuid VARCHAR(255) NOT NULL, receiver_uuid VARCHAR(255) NOT NULL, message TEXT NOT NULL, viewed tinyint(1) NOT NULL DEFAULT 0, PRIMARY KEY (id)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_bin;").execute();
+            // v1.1
+            this.connection.prepareStatement("ALTER TABLE velocitymail ADD COLUMN IF NOT EXISTS timestamp TIMESTAMP NULL AFTER viewed").execute();
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
         try {
-            PreparedStatement sqlPlayer = this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS velocitymail_players ( uuid VARCHAR(255) NOT NULL , username VARCHAR(255) NOT NULL , PRIMARY KEY (uuid))");
-            sqlPlayer.execute();
+           this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS velocitymail_players ( uuid VARCHAR(255) NOT NULL , username VARCHAR(255) NOT NULL , PRIMARY KEY (uuid))").execute();
         } catch (SQLException e) {
-            this.velocityMail.getLogger().debug(e.toString());
+            this.velocityMail.getLogger().error(e.toString());
         }
     }
 }
