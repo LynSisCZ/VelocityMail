@@ -1,13 +1,15 @@
 package com.lynsis.velocitymail.utils;
 
 import com.lynsis.velocitymail.VelocityMail;
-import com.lynsis.velocitymail.config.ConfigManager;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.apache.commons.io.IOUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class FileUtils {
 
@@ -19,14 +21,14 @@ public class FileUtils {
 
         if (!copyFile.exists()) {
             copyFile.getParentFile().mkdirs();
-            copyFile = copyResource(name + ".yml",copyFile);
+            copyFile = copyResource(name + ".yml", copyFile);
         }
 
-         return YAMLConfigurationLoader.builder().setFile(copyFile).build().load();
+        return YAMLConfigurationLoader.builder().setFile(copyFile).build().load();
     }
 
     public static File copyResource(String resourceFileName, File file) {
-        InputStream inputStream =  FileUtils.class.getClassLoader().getResourceAsStream(resourceFileName);
+        InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourceFileName);
 
         try {
             FileOutputStream outputStream = new FileOutputStream(file);

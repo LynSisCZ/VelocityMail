@@ -18,62 +18,65 @@ public class StorageManager {
     private HashMap<String, String> players = new HashMap<String, String>();
 
 
-    public StorageManager(VelocityMail velocityMail){
+    public StorageManager(VelocityMail velocityMail) {
         this.velocityMail = velocityMail;
         String method = ConfigManager.config.getNode("storage", "method").getString();
-        if(method.equalsIgnoreCase("mysql")) {
+        if (method.equalsIgnoreCase("mysql")) {
             this.storage = new StorageMysql(velocityMail);
-        }else{
+        } else {
             this.storage = new StorageYaml(velocityMail);
         }
     }
 
-    public Storage getStorage(){
-        if(this.storage.getStatus()){
+    public Storage getStorage() {
+        if (this.storage.getStatus()) {
             return this.storage;
-        }else{
+        } else {
             this.storage.connect();
-            if(this.storage.getStatus()){
+            if (this.storage.getStatus()) {
                 return this.storage;
             }
         }
         return null;
     }
 
-    public HashMap<String, String> getPlayers(){
+    public HashMap<String, String> getPlayers() {
         return players;
+
     }
 
-    public String getPlayerUuid(String playername){
+    public String getPlayerUuid(String playername) {
         return players.get(playername);
     }
-    public String getPlayerByUuid(String uuid){
+
+    public String getPlayerByUuid(String uuid) {
         return players.entrySet().stream().filter(p -> uuid.equals(p.getValue())).map(Map.Entry::getKey).findAny().orElse(uuid);
     }
 
-    public void addPlayer(Player player){
-        if(players.get(player.getUsername()) == null) {
+    public void addPlayer(Player player) {
+        if (players.get(player.getUsername()) == null) {
             players.put(player.getUsername().toLowerCase(), player.getUniqueId().toString());
             this.getStorage().savePlayer(player);
         }
     }
-    public void saveMessage(Message message){
+
+    public void saveMessage(Message message) {
         this.getStorage().saveMessage(message);
-        Player p = this.velocityMail.getProxy().getAllPlayers().stream().filter(player -> message.receiverUuid.equals(player.getUniqueId().toString())).findAny().orElse(null);;
-        if(p != null){
+        Player p = this.velocityMail.getProxy().getAllPlayers().stream().filter(player -> message.receiverUuid.equals(player.getUniqueId().toString())).findAny().orElse(null);
+        if (p != null) {
             MessageManager.mailInfo(p);
         }
     }
 
 
-    public void findMessages(Player player){
+    public void findMessages(Player player) {
         int countUnseen = this.getStorage().getCountUnseen(player.getUniqueId().toString());
-        if(countUnseen > 0){
+        if (countUnseen > 0) {
             MessageManager.mailInfo(player);
         }
     }
 
-    public void loadPlayersOnStart(){
+    public void loadPlayersOnStart() {
         this.players = this.getStorage().loadPlayers();
     }
 
@@ -82,23 +85,23 @@ public class StorageManager {
 
     public void getView(CommandSource source) {
         String playerUuid = "";
-        if(source instanceof ConsoleCommandSource){
+
+        if (source instanceof ConsoleCommandSource) {
             playerUuid = "console";
         } else {
             playerUuid = ((Player) source).getUniqueId().toString();
         }
-         ArrayList<Message> messages = this.getStorage().getView(playerUuid);
-        if(!messages.isEmpty()){
+
+        ArrayList<Message> messages = this.getStorage().getView(playerUuid);
+        if (!messages.isEmpty()) {
             MessageManager.mailView(source);
             messages.forEach(m -> {
                 MessageManager.mail(source, m, this);
             });
-
-        }else{
+            this.getStorage().setView(playerUuid);
+        } else {
             MessageManager.mailEmpty(source);
         }
-
-
     }
 
     public void clear(CommandSource source) {

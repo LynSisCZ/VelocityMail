@@ -9,6 +9,7 @@ public abstract class Storage {
     public abstract void getAll(String receiverUuid);
 
     public abstract ArrayList<Message> getView(String receiverUuid);
+
     public abstract void clear(String receiverUuid);
 
     public abstract void saveMessage(Message message);
@@ -22,4 +23,6 @@ public abstract class Storage {
     public abstract boolean getStatus();
 
     public abstract void connect();
+
+    public abstract void setView(String playerUuid);
 }

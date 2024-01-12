@@ -1,5 +1,5 @@
 language: "cs_cz"
-prefix: "&6[Mail]"
+prefix: "<yellow><bold>[Mail]"
 storage:
   method: "mysql"
   data:

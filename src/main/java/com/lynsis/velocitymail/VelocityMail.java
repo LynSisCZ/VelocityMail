@@ -5,9 +5,10 @@ import com.lynsis.velocitymail.command.MailCommand;
 import com.lynsis.velocitymail.config.ConfigManager;
 import com.lynsis.velocitymail.message.MessageManager;
 import com.lynsis.velocitymail.storage.StorageManager;
+import com.velocitypowered.api.event.PostOrder;
+import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(
         id = "velocitymail",
@@ -47,14 +49,18 @@ public class VelocityMail {
         this.storageManager.loadPlayersOnStart();
     }
 
-    public void unRegisterCommand(){
+    public void unRegisterCommand() {
         this.proxy.getCommandManager().unregister(MailCommand.commandMeta(this));
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.LATE)
     public void onPlayerJoin(ServerConnectedEvent joinEvent) {
-        this.storageManager.addPlayer(joinEvent.getPlayer());
-        this.storageManager.findMessages(joinEvent.getPlayer());
+        this.proxy.getScheduler()
+                .buildTask(this, () -> {
+                    this.storageManager.addPlayer(joinEvent.getPlayer());
+                    this.storageManager.findMessages(joinEvent.getPlayer());
+                })
+                .delay(5L, TimeUnit.SECONDS).schedule();
     }
 
     public ProxyServer getProxy() {

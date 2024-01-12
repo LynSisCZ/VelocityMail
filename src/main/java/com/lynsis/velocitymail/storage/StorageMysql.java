@@ -5,7 +5,10 @@ import com.lynsis.velocitymail.config.ConfigManager;
 import com.velocitypowered.api.proxy.Player;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,6 +28,7 @@ public class StorageMysql extends Storage {
         this.connect();
         this.checkDatabase();
     }
+
     @Override
     public void getAll(String receiverUuid) {
 
@@ -33,11 +37,11 @@ public class StorageMysql extends Storage {
     @Override
     public ArrayList<Message> getView(String receiverUuid) {
         try {
-            PreparedStatement query = this.connection.prepareStatement("SELECT * FROM  velocitymail WHERE receiver_uuid = ?");
+            PreparedStatement query = this.connection.prepareStatement("SELECT * FROM  velocitymail WHERE viewed = 0 AND receiver_uuid = ?");
             query.setString(1, receiverUuid);
             ResultSet rs = query.executeQuery();
             ArrayList<Message> messages = new ArrayList<>();
-            while (rs.next()){
+            while (rs.next()) {
                 messages.add(new Message(rs.getString("sender_uuid"), rs.getString("receiver_uuid"), rs.getString("message")));
             }
             return messages;
@@ -52,7 +56,7 @@ public class StorageMysql extends Storage {
 
     }
 
-    public void saveMessage(Message message){
+    public void saveMessage(Message message) {
         try {
             PreparedStatement query = this.connection.prepareStatement("INSERT INTO velocitymail (sender_uuid, receiver_uuid, message ) VALUES (?,?,?)");
             query.setString(1, message.senderUuid);
@@ -64,23 +68,24 @@ public class StorageMysql extends Storage {
         }
     }
 
-    public void savePlayer(Player player){
+    public void savePlayer(Player player) {
         try {
             PreparedStatement query = this.connection.prepareStatement("INSERT IGNORE INTO velocitymail_players VALUES (?,?)");
-            query.setString(1,  player.getUniqueId().toString());
-            query.setString(2,  player.getUsername().toLowerCase());
+            query.setString(1, player.getUniqueId().toString());
+            query.setString(2, player.getUsername().toLowerCase());
 
             query.execute();
         } catch (SQLException e) {
             this.velocityMail.getLogger().debug(e.toString());
         }
     }
-    public HashMap<String, String> loadPlayers(){
+
+    public HashMap<String, String> loadPlayers() {
         try {
             HashMap<String, String> players = new HashMap<String, String>();
 
             ResultSet rs = this.connection.prepareStatement("SELECT * FROM  velocitymail_players").executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 players.put(rs.getString("username"), rs.getString("uuid"));
             }
             return players;
@@ -95,11 +100,11 @@ public class StorageMysql extends Storage {
         int messagesCount = 0;
         try {
             HashMap<String, String> players = new HashMap<String, String>();
-            PreparedStatement query = this.connection.prepareStatement("SELECT count(*) FROM  velocitymail WHERE receiver_uuid = ?");
+            PreparedStatement query = this.connection.prepareStatement("SELECT count(*) FROM  velocitymail WHERE viewed = 0 AND receiver_uuid = ?");
             query.setString(1, uuid);
 
             ResultSet rs = query.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 messagesCount = rs.getInt(1);
             }
         } catch (SQLException e) {
@@ -128,7 +133,18 @@ public class StorageMysql extends Storage {
         }
     }
 
-    public void checkDatabase(){
+    @Override
+    public void setView(String playerUuid) {
+        try {
+            PreparedStatement query = this.connection.prepareStatement("UPDATE velocitymail SET viewed = 1 WHERE receiver_uuid = ?");
+            query.setString(1, playerUuid);
+            query.execute();
+        } catch (SQLException e) {
+            this.velocityMail.getLogger().debug(e.toString());
+        }
+    }
+
+    public void checkDatabase() {
         try {
             PreparedStatement sqlMail = this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS velocitymail (id INT NOT NULL AUTO_INCREMENT, sender_uuid VARCHAR(255) NOT NULL, receiver_uuid VARCHAR(255) NOT NULL, message TEXT NOT NULL, viewed tinyint(1) NOT NULL DEFAULT 0, PRIMARY KEY (id)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_bin;");
             sqlMail.execute();
