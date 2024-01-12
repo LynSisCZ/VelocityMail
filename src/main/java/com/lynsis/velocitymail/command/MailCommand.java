@@ -15,6 +15,8 @@ import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import java.time.LocalDateTime;
+
 
 public final class MailCommand {
     public static CommandMeta commandMeta(VelocityMail velocityMail) {
@@ -52,10 +54,10 @@ public final class MailCommand {
                                     }
 
                                     if (context.getSource() instanceof ConsoleCommandSource) {
-                                        velocityMail.storageManager.saveMessage(new Message("console", receiverUuid, msg));
+                                        velocityMail.storageManager.saveMessage(new Message("console", receiverUuid, msg, LocalDateTime.now()));
                                     } else {
                                         Player p = ((Player) context.getSource());
-                                        velocityMail.storageManager.saveMessage(new Message(p.getUniqueId().toString(), receiverUuid, msg));
+                                        velocityMail.storageManager.saveMessage(new Message(p.getUniqueId().toString(), receiverUuid, msg, LocalDateTime.now()));
                                     }
 
                                     MessageManager.mailSent(context.getSource(), receiverName);
@@ -70,11 +72,7 @@ public final class MailCommand {
                                     velocityMail.storageManager.getView(context.getSource());
                                     break;
                                 case "all":
-                                    velocityMail.storageManager.getAll(context.getSource());
-                                    break;
                                 case "clear":
-                                    velocityMail.storageManager.clear(context.getSource());
-                                    break;
                                 default:
                                     MessageManager.mailHelp(context.getSource());
                                     break;
