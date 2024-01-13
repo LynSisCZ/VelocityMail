@@ -36,6 +36,7 @@ public final class MailCommand {
                 .then(RequiredArgumentBuilder.<CommandSource, String>argument("argument", StringArgumentType.word())
                         .suggests((ctx, builder) -> {
                             builder.suggest("view");
+                            builder.suggest("list");
                             builder.suggest("all");
                             builder.suggest("clear");
                             velocityMail.storageManager.getPlayers().forEach((key, value) -> builder.suggest(
@@ -69,6 +70,7 @@ public final class MailCommand {
 
                             switch (argumentProvided) {
                                 case "view":
+                                case "list":
                                     velocityMail.storageManager.getView(context.getSource());
                                     break;
                                 case "all":

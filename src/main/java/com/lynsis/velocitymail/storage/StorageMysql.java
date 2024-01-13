@@ -132,7 +132,14 @@ public class StorageMysql extends Storage {
             this.velocityMail.unRegisterCommand();
         }
     }
-
+    @Override
+    public void disconnect(){
+        try {
+            this.connection = this.dataSource.getConnection();
+        } catch (SQLException e) {
+            this.velocityMail.getLogger().error(e.toString());
+        }
+    }
     @Override
     public void setView(String playerUuid) {
         try {
