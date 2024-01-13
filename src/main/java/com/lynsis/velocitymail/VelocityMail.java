@@ -1,6 +1,7 @@
 package com.lynsis.velocitymail;
 
 import com.google.inject.Inject;
+import com.lynsis.velocitymail.command.MailAdminCommand;
 import com.lynsis.velocitymail.command.MailCommand;
 import com.lynsis.velocitymail.config.ConfigManager;
 import com.lynsis.velocitymail.message.MessageManager;
@@ -21,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "velocitymail",
         name = "VelocityMail",
-        version = "1.1-BETA",
+        version = "1.2-Beta",
         authors = {"LynSisCZ"}
 )
 public class VelocityMail {
@@ -41,14 +42,28 @@ public class VelocityMail {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) throws IOException {
-        this.proxy.getCommandManager().register(MailCommand.commandMeta(this), MailCommand.createBrigadierCommand(this.proxy, this));
+        this.proxy.getCommandManager().register(MailAdminCommand.commandMeta(this), MailAdminCommand.createBrigadierCommand(this.proxy, this));
+        
+        this.load();
+    }
+    public void load(){
         ConfigManager.loadConfig();
-        this.logger.error(ConfigManager.config.getNode("storage", "data", "address").getString());
         MessageManager.loadMessages();
+        this.proxy.getCommandManager().register(MailCommand.commandMeta(this), MailCommand.createBrigadierCommand(this.proxy, this));
+
         this.storageManager = new StorageManager(this);
         this.storageManager.loadPlayersOnStart();
+        
+    }
+    public void unload(){
+        this.storageManager.unload();
+        this.unRegisterCommand();
     }
 
+    public void reload(){
+        this.unload();
+        this.load();
+    }
     public void unRegisterCommand() {
         this.proxy.getCommandManager().unregister(MailCommand.commandMeta(this));
     }

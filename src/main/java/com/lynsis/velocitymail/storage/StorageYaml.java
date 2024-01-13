@@ -61,4 +61,9 @@ public class StorageYaml extends Storage {
     public void setView(String playerUuid) {
 
     }
+
+    @Override
+    public void disconnect() {
+
+    }
 }
