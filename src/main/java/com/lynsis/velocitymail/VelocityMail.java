@@ -42,9 +42,9 @@ public class VelocityMail {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) throws IOException {
-        this.load();
         this.proxy.getCommandManager().register(MailAdminCommand.commandMeta(this), MailAdminCommand.createBrigadierCommand(this.proxy, this));
 
+        this.load();
     }
     public void load(){
         ConfigManager.loadConfig();
@@ -55,6 +55,7 @@ public class VelocityMail {
         this.storageManager = new StorageManager(this);
         this.storageManager.loadPlayersOnStart();
     }
+
     public void unload(){
         this.storageManager.unload();
         this.unRegisterCommand();

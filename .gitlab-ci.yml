@@ -4,8 +4,17 @@ stages:
 java-build:
   image: maven:latest
   stage: build
+  only:
+  - tags
   artifacts:
       paths:
           - target/VelocityMail-*.jar
   script:
     - mvn package -DskipTests=true
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: 'VelocityMail release $CI_COMMIT_TAG'
+    assets:
+      links: 
+        - name: 'VelocityMail-$CI_COMMIT_TAG.jar'
+          url: "$CI_API_V4_URL/projects/$CI_PROJECT_ID/jobs/$CI_JOB_ID/artifacts/target/VelocityMail-$CI_COMMIT_TAG.jar"
