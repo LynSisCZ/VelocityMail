@@ -43,15 +43,17 @@ public class VelocityMail {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) throws IOException {
         this.load();
+        this.proxy.getCommandManager().register(MailAdminCommand.commandMeta(this), MailAdminCommand.createBrigadierCommand(this.proxy, this));
+
     }
     public void load(){
         ConfigManager.loadConfig();
+        this.logger.error(ConfigManager.config.getNode("storage", "data", "address").getString());
         MessageManager.loadMessages();
         this.proxy.getCommandManager().register(MailCommand.commandMeta(this), MailCommand.createBrigadierCommand(this.proxy, this));
 
         this.storageManager = new StorageManager(this);
         this.storageManager.loadPlayersOnStart();
-        this.proxy.getCommandManager().register(MailAdminCommand.commandMeta(this), MailAdminCommand.createBrigadierCommand(this.proxy, this));
     }
     public void unload(){
         this.storageManager.unload();

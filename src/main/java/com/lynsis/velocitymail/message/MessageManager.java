@@ -31,13 +31,14 @@ import java.io.IOException;
 import java.util.List;
 
 public class MessageManager {
-    public static String prefix = ConfigManager.config.getNode("prefix").getString();
+    public static String prefix;
     public static @NonNull ConfigurationNode messages;
 
     public static void loadMessages() {
         try {
             String lang = ConfigManager.config.getNode("language").toString() != null ? ConfigManager.config.getNode("language").getString() : "cs_cz";
             MessageManager.messages = FileUtils.loadOrCreate("languages/" + lang);
+            MessageManager.prefix = ConfigManager.config.getNode("prefix").getString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

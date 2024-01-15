@@ -19,13 +19,8 @@
     <build>
         <resources>
             <resource>
-                <directory>${project.basedir}/src/main/resources/</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
-            </resource>
-            <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
-                <directory>${project.basedir}/src/main/resources/languages/</directory>
             </resource>
         </resources>
         <plugins>
@@ -69,19 +64,13 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.12.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
             <version>3.2.0-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.linkedin.urls</groupId>
-            <artifactId>url-detector</artifactId>
-            <version>0.1.17</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
