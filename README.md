@@ -14,7 +14,7 @@ VelocityMail is a simple mail plugin for Velocity (https://papermc.io/software/v
 
 - `/mail <recipient> <message>` <br> Send a mail with content `<message>` to `<recipient>`. Note that you can only send messages to players that have played on the server at least once after the plugin has been installed.
 
-- `/mail reload` <br> Reload the config and language file.<br> 
+- `/mailadmin reload` <br> Reload the config and language file.<br> 
 Permission: `mail.mailadmin`
 
 
