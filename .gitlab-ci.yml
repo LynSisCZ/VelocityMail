@@ -2,6 +2,8 @@ stages:
   - build
   
 java-build:
+  only:
+  - tags
   image: maven:latest
   stage: build
   artifacts:
