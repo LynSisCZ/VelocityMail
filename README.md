@@ -1,6 +1,5 @@
 # VelocityMail
-[![pipeline status](https://gitlab.lukasslaby.cz/majn/VelocityMail/badges/main/pipeline.svg)](https://gitlab.lukasslaby.cz/majn/VelocityMail/-/commits/main)
-![](https://dcbadge.vercel.app/api/shield/305386943137579008)
+[![Latest Release](https://gitlab.lukasslaby.cz/majn/VelocityMail/-/badges/release.svg)](https://gitlab.lukasslaby.cz/majn/VelocityMail/-/releases) ![](https://dcbadge.vercel.app/api/shield/305386943137579008)
 
 
 # About
