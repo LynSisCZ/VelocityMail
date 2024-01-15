@@ -73,6 +73,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.linkedin.urls</groupId>
+            <artifactId>url-detector</artifactId>
+            <version>0.1.17</version>
+            <scope>compile</scope>
+            </dependency>
+        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>4.0.3</version>
