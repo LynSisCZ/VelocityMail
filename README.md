@@ -1,5 +1,7 @@
 # VelocityMail
 [![pipeline status](https://gitlab.lukasslaby.cz/majn/VelocityMail/badges/main/pipeline.svg)](https://gitlab.lukasslaby.cz/majn/VelocityMail/-/commits/main)
+![](https://dcbadge.vercel.app/api/shield/305386943137579008)
+
 
 # About
 VelocityMail is a simple mail plugin for Velocity (https://papermc.io/software/velocity).
